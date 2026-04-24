@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order Summary</title>
+  <style>
+    body {
+      font-family: Arial;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 50px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input, select {
+      width: 95%;
+      padding: 8px;
+      margin: 8px 0;
+    }
+
+    #terms {
+      width: 10%;
+    }
+
+    button {
+      padding: 10px;
+      width: 100%;
+      margin-top: 5px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .error {
+      color: red;
+      margin-bottom: 10px;
+      min-height: 18px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1> Order Summary</h1>
+    
+    <div class="reciept">
+      <h2>Thank you for your preorder!</h2>
+      <p>Your strip will be given soon :)</p>
+    </div>
+
+    <div>
+      <span>Customer Name:</span>
+      <span id="name">Your name will appear here</span>
+    </div>
+    
+    <div>
+      <span>Product:</span>
+      <span id="product">Your product will appear here</span>
+    </div>
+    
+    <div>
+      <span>Quantity:</span>
+      <span id="quantity">The amount will appear here</span>
+    </div>
+    
+    <div>
+      <span>Pickup Method:</span>
+      <span id="pickup">Your Pickup will appear here</span>
+    </div>
+    
+      <div class="address">
+        <span>Delivery Address:</span>
+        <span id="address">Your address will appear here</span>
+      </div>
+    
+    <div class="Amount">
+      <span>Total Amount:</span>
+      <span id="total">PHP 0</span>
+    </div>
+
+    <button onclick="window.location.href='index.html'">
+      Place Another Order
+    </button>
+  </div>
+
+  <script>
+    // Cookie function (same as preorder.html)
+    function getCookie(name) {
+  let keyEq = name + "=";  // Fixed: name not key
+  let cookies = document.cookie.split(";");
+
+  for (let i = 0; i < cookies.length; i++) {
+    let c = cookies[i];
+
+    // remove leading space
+    if (c.charAt(0) == " ") {
+      c = c.substring(1);
+    }
+
+    // match key
+    if (c.indexOf(keyEq) == 0) {
+      return c.substring(keyEq.length);  // No decode needed if setCookie didn't encode
+    }
+  }
+  return null;
+}
+
+    // Load data
+
+    let name = getCookie('customerName');
+    let product = localStorage.getItem('product');
+    let quantity = localStorage.getItem('quantity');
+    let pickup = localStorage.getItem('pickup');
+    let address = localStorage.getItem('address');
+
+    // Display data
+    document.getElementById('name').innerHTML = name;
+    document.getElementById('product').innerHTML = product;
+    document.getElementById('quantity').innerHTML = quantity;
+    document.getElementById('pickup').innerHTML = pickup;
+    document.getElementById('address').innerHTML = address;
+    // Show address if Delivery
+
+    // Calculate total: Extract price from "Without a plastic cover (PHP 95)"
+let price = 0;
+let amountOf = Number(quantity) || 0;  // NaN → 0
+
+if (product === "Without a plastic cover (PHP 95)") {
+  price = 95;
+} else if (product === "With a plastic cover (PHP 145)") {
+  price = 145;
+}
+
+const totalPrice = price * amountOf;
+document.getElementById('total').textContent = 'PHP ' + totalPrice;
+</script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pre-Order Form</title>
+  <style>
+    body {
+      font-family: Arial;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 50px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input, select {
+      width: 95%;
+      padding: 8px;
+      margin: 8px 0;
+    }
+
+    #terms {
+      width: 10%;
+    }
+
+    button {
+      padding: 10px;
+      width: 100%;
+      margin-top: 5px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .error {
+      color: red;
+      margin-bottom: 10px;
+      min-height: 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Science Project Pre-Order</h2>
+  <div class="description">
+    Project Antho-Presko is an intelligent packaging strip that provides a simple way to identify early food spoilage by detecting ammonia (NH3) released from protein-rich foods through a natural colorimetric strip, helping make food spoilage detection more accessible and sustainable.
+  </div>
+
+
+  <!-- Error Message Area -->
+  <div id="errorMsg" class="error"></div>
+
+  <form onsubmit="return handleOrder()">
+    
+    <label>Name:</label>
+    <input type="text" id="name">
+
+    <label>Product: Antho-Presko</label>
+    <select id="variant">
+      <option value="">Select</option>
+      <option value="Without a plastic cover (PHP 95)">Without a plastic cover (PHP 95)</option>
+      <option value="With a plastic cover (PHP 145)">With a plastic cover (PHP 145)</option>
+    </select>
+
+    <label>Quantity:</label>
+    <input type="number" id="quantity">
+
+    <label>Pickup Method:</label>
+    <select id="pickup">
+      <option value="">Select</option>
+      <option value="Delivery">Delivery</option>
+      <option value="Meetup">Meetup</option>
+    </select>
+
+    <label>Address (for delivery only):</label>
+    <input type="text" id="address">
+
+    <label>
+      <input type="checkbox" id="terms"> I accept terms
+    </label>
+    <br><br>
+
+    <button type="button" onclick="loadPreviousOrder()">Load Previous Order</button>
+    <button type="submit">Submit</button>
+
+  </form>
+</div>
+
+<script>
+
+  // COOKIE FUNCTIONS
+  function setCookie(name, value, maxAge) {
+  let cookieStr = name + "=" + encodeURIComponent(value) + ";";
+  if (maxAge > -1) {
+    cookieStr += " max-age=" + maxAge + ";";
+  }
+  cookieStr += " path=/";
+  document.cookie = cookieStr;
+  }
+
+  function getCookie(name) {
+  let keyEq = name + "=";  // Fixed: name not key
+  let cookies = document.cookie.split(";");
+
+  for (let i = 0; i < cookies.length; i++) {
+    let c = cookies[i];
+
+    // remove leading space
+    if (c.charAt(0) == " ") {
+      c = c.substring(1);
+    }
+
+    // match key
+    if (c.indexOf(keyEq) == 0) {
+      return c.substring(keyEq.length);  // No decode needed if setCookie didn't encode
+    }
+  }
+  return null;
+}
+
+  function deleteCookie(name) {
+    document.cookie = name + "=; max-age=0; path=/";
+  }
+
+  // MAIN SUBMIT HANDLER
+  function handleOrder() {
+    document.getElementById("errorMsg").innerHTML = "";
+
+  // Get values
+  let name = document.getElementById('name').value.trim();
+  let variant = document.getElementById('variant').value;
+  let quantity = Number(document.getElementById('quantity').value);
+  let pickup = document.getElementById('pickup').value;
+  let address = document.getElementById('address').value.trim();
+  let terms = document.getElementById('terms').checked;
+
+    
+    // TODO: Validation
+    // If invalid: Display appropriate error message
+    // return false;
+  if (name === "") {
+    document.getElementById("errorMsg").innerHTML = "*Please fill out all the fields";
+    return false;
+  } 
+  if (variant === "") {
+    document.getElementById("errorMsg").innerHTML = "*Please fill out all the fields";
+    return false;
+  } 
+  if (quantity <= 0) {
+    document.getElementById("errorMsg").innerHTML = "*Quantity must be greater than 0";
+    return false;
+  } 
+  if (pickup === "") {
+  document.getElementById("errorMsg").innerHTML = "*Please fill out all the fields";
+  return false;
+}
+  if (pickup === "Delivery" && address === "") {
+  document.getElementById("errorMsg").innerHTML = "*Address required for Delivery";
+  return false;
+}
+  if (!terms) {
+    document.getElementById("errorMsg").innerHTML = "*Please accept the terms to continue";
+    return false;
+  }
+    
+
+    // Otherwise: Store data (cookies + localStorage)
+setCookie('customerName', name, 604800);
+localStorage.setItem('product', variant);
+localStorage.setItem('quantity', quantity);
+localStorage.setItem('pickup', pickup);
+localStorage.setItem('address', address);
+
+    // Redirect to summary.html
+    window.location.href = "summary.html";
+
+    return false;
+  }
+
+  // LOAD PREVIOUS ORDER
+  function loadPreviousOrder() {
+ // Retrieve stored data
+  const name = getCookie('customerName');
+  const product = localStorage.getItem('product');
+  const quantity = localStorage.getItem('quantity');
+  const pickup = localStorage.getItem('pickup');
+  const address = localStorage.getItem('address');
+
+  // If no data: Display error message
+  if (!name && !product && !quantity && !pickup && !address) {
+    document.getElementById("errorMsg").innerHTML = "*No previous order data found";
+    return;
+  }
+
+  // Otherwise: Populate fields
+  document.getElementById('name').value = name;
+  document.getElementById('variant').value = product;
+  document.getElementById('quantity').value = quantity;
+  document.getElementById('pickup').value = pickup;
+  document.getElementById('address').value = address;
+}
+
+</script>
+
+</body>
+</html>
+
